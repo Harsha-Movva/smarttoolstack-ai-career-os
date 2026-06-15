@@ -156,4 +156,4 @@ smarttoolstack-ai-career-os/
 
 ---
 
-*Developed by MUNNA & Harsha-Movva © 2026*
+*Developed by Movva Hema Harsha Viran © 2026*
