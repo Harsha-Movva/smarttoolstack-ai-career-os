@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect
+} from "react";
 
 import Sidebar from "@/components/layout/Sidebar";
 import ATSCard from "@/components/cards/ATSCard";
@@ -11,6 +14,8 @@ import RoadmapCard from "@/components/cards/RoadmapCard";
 import JobMatch from "@/components/job/JobMatch";
 
 export default function Home() {
+  const [userName, setUserName] =
+  useState("");
   const [atsScore, setAtsScore] =
     useState(0);
 
@@ -34,6 +39,9 @@ export default function Home() {
 
   const [suggestions, setSuggestions] =
     useState<string[]>([]);
+
+  const [reportLoading, setReportLoading] =
+    useState(false);
 
   const handleAnalysisComplete = (
     score: number,
@@ -62,14 +70,131 @@ export default function Home() {
     setSuggestions(suggestionsData);
   };
 
+  const downloadReport = async () => {
+    try {
+      setReportLoading(true);
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/generate-report",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            ats_score: atsScore,
+            career: career,
+            skills: skills,
+            missing_skills:
+              missingSkills,
+            roadmap: roadmap,
+            suggestions:
+              suggestions,
+          }),
+        }
+      );
+
+      const blob =
+        await response.blob();
+
+      const url =
+        window.URL.createObjectURL(
+          blob
+        );
+
+      const a =
+        document.createElement("a");
+
+      a.href = url;
+
+      a.download =
+        "Career_Report.pdf";
+
+      document.body.appendChild(a);
+
+      a.click();
+
+      a.remove();
+
+      window.URL.revokeObjectURL(
+        url
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setReportLoading(false);
+    }
+  };
+useEffect(() => {
+
+  const user =
+    localStorage.getItem("user");
+
+  if (!user) {
+
+    window.location.href =
+      "/login";
+
+    return;
+  }
+
+  const parsedUser =
+    JSON.parse(user);
+
+  setUserName(
+    parsedUser.name
+  );
+
+}, []);
+const handleLogout = () => {
+
+  localStorage.removeItem(
+    "user"
+  );
+
+  window.location.href =
+    "/login";
+};
   return (
     <div className="flex min-h-screen bg-black">
       <Sidebar />
 
       <main className="flex-1 p-8">
-        <h1 className="text-4xl font-bold text-white mb-8">
-          Dashboard
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+
+  <div>
+
+    <h1 className="text-4xl font-bold text-white">
+      Welcome {userName || "User"} 👋
+    </h1>
+
+    <p className="text-zinc-400 mt-2">
+      SmartToolStack AI Career OS
+    </p>
+
+  </div>
+
+  {userName && (
+
+  <button
+    onClick={handleLogout}
+    className="
+      px-5
+      py-2
+      rounded-xl
+      bg-red-500
+      text-white
+      font-semibold
+      hover:bg-red-400
+    "
+  >
+    Logout
+  </button>
+
+)}
+
+</div>
 
         <div className="grid grid-cols-3 gap-6">
           <ATSCard score={atsScore} />
@@ -104,7 +229,7 @@ export default function Home() {
             {skills.map((skill, index) => (
               <div
                 key={index}
-                className="px-4 py-2 rounded-xl border border-green-500"
+                className="px-4 py-2 rounded-xl border border-green-500 text-white"
               >
                 {skill}
               </div>
@@ -122,7 +247,7 @@ export default function Home() {
             {missingSkills.map((skill, index) => (
               <div
                 key={index}
-                className="px-4 py-2 rounded-xl border border-red-500"
+                className="px-4 py-2 rounded-xl border border-red-500 text-white"
               >
                 {skill}
               </div>
@@ -142,7 +267,6 @@ export default function Home() {
           </h2>
 
           <div className="mt-6">
-
             <h3 className="text-green-400 font-bold">
               Strengths
             </h3>
@@ -187,13 +311,32 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-
           </div>
+        </div>
+
+        {/* Download PDF Report */}
+        <div className="mt-8">
+          <button
+            onClick={downloadReport}
+            disabled={reportLoading}
+            className="
+              px-6
+              py-3
+              rounded-xl
+              bg-cyan-500
+              text-black
+              font-bold
+              hover:bg-cyan-400
+            "
+          >
+            {reportLoading
+              ? "Generating..."
+              : "Download PDF Report"}
+          </button>
         </div>
 
         {/* Job Match Analyzer */}
         <JobMatch skills={skills} />
-
       </main>
     </div>
   );
