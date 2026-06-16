@@ -19,12 +19,14 @@ type Props = {
 export default function ResumeUpload({
   onAnalysisComplete,
 }: Props) {
+
   const [fileName, setFileName] =
     useState("");
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -36,6 +38,7 @@ export default function ResumeUpload({
     formData.append("file", file);
 
     try {
+
       const response = await axios.post(
         "http://127.0.0.1:8000/upload",
         formData,
@@ -44,6 +47,27 @@ export default function ResumeUpload({
             "Content-Type":
               "multipart/form-data",
           },
+        }
+      );
+
+      const user = JSON.parse(
+        localStorage.getItem("user") || "{}"
+      );
+
+      await axios.post(
+        "http://127.0.0.1:8000/save-report",
+        {
+          user_id: user.id,
+          ats_score:
+            response.data.ats_score,
+          career:
+            response.data.career,
+          skills:
+            response.data.skills,
+          missing_skills:
+            response.data.missing_skills,
+          roadmap:
+            response.data.roadmap,
         }
       );
 
@@ -59,15 +83,18 @@ export default function ResumeUpload({
       );
 
     } catch (error) {
+
       console.error(
         "Upload Error:",
         error
       );
+
     }
   };
 
   return (
     <div className="mt-8">
+
       <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-10">
 
         <h2 className="text-2xl font-bold text-white">
@@ -119,7 +146,9 @@ export default function ResumeUpload({
           )}
 
         </div>
+
       </div>
+
     </div>
   );
 }
