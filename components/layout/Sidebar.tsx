@@ -56,7 +56,50 @@ export default function Sidebar() {
         >
           📄 My Reports
         </Link>
-
+        <Link
+  href="/resume-builder"
+  className="
+    block
+    px-4
+    py-3
+    rounded-xl
+    text-zinc-300
+    hover:bg-zinc-800
+    hover:text-cyan-400
+    transition
+  "
+>
+  📄 AI Resume Builder
+</Link>
+<Link
+  href="/cover-letter"
+  className="
+    block
+    px-4
+    py-3
+    rounded-xl
+    text-zinc-300
+    hover:bg-zinc-800
+    hover:text-cyan-400
+  "
+>
+  ✉️ Cover Letter
+</Link>
+<Link
+  href="/interview"
+  className="
+    block
+    px-4
+    py-3
+    rounded-xl
+    text-zinc-300
+    hover:bg-zinc-800
+    hover:text-cyan-400
+    transition
+  "
+>
+  🎤 Interview Copilot
+</Link>
         <div
           className="
             px-4
