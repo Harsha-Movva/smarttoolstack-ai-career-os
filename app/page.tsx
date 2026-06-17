@@ -178,25 +178,27 @@ const handleLogout = () => {
   {userName && (
 
   <button
-    onClick={handleLogout}
-    className="
-      px-5
-      py-2
-      rounded-xl
-      bg-red-500
-      text-white
-      font-semibold
-      hover:bg-red-400
-    "
-  >
-    Logout
-  </button>
+  onClick={handleLogout}
+  className="
+    px-6
+    py-3
+    rounded-xl
+    bg-red-500
+    text-white
+    font-semibold
+    hover:bg-red-400
+    transition
+    shadow-lg
+  "
+>
+  Logout
+</button>
 
 )}
 
 </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 grid-cols-1 gap-6">
           <ATSCard score={atsScore} />
           <SkillGapCard />
           <CareerScoreCard />
@@ -229,7 +231,15 @@ const handleLogout = () => {
             {skills.map((skill, index) => (
               <div
                 key={index}
-                className="px-4 py-2 rounded-xl border border-green-500 text-white"
+                className="
+  px-4
+  py-2
+  rounded-xl
+  border
+  border-green-500
+  bg-zinc-800
+  text-white
+"
               >
                 {skill}
               </div>
@@ -247,7 +257,15 @@ const handleLogout = () => {
             {missingSkills.map((skill, index) => (
               <div
                 key={index}
-                className="px-4 py-2 rounded-xl border border-red-500 text-white"
+                className="
+  px-4
+  py-2
+  rounded-xl
+  border
+  border-red-500
+  bg-zinc-800
+  text-white
+"
               >
                 {skill}
               </div>

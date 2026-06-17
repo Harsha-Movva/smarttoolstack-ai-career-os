@@ -1,11 +1,19 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import (
+    FastAPI,
+    UploadFile,
+    File,
+    Depends
+)
+from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from datetime import datetime
 from services.parser import extract_text
 from database import (
+    SessionLocal,
     engine,
-    SessionLocal
+    Base,
+    get_db
 )
 
 from models import (
@@ -410,3 +418,38 @@ def get_users():
     db.close()
 
     return result
+@app.get("/report/{report_id}")
+def get_report(
+    report_id: int,
+    db: Session = Depends(get_db)
+):
+    report = (
+        db.query(Report)
+        .filter(
+            Report.id == report_id
+        )
+        .first()
+    )
+
+    if not report:
+        return {
+            "error":
+            "Report not found"
+        }
+
+    return {
+        "id": report.id,
+        "user_id": report.user_id,
+        "ats_score":
+            report.ats_score,
+        "career":
+            report.career,
+        "skills":
+            report.skills,
+        "missing_skills":
+            report.missing_skills,
+        "roadmap":
+            report.roadmap,
+        "created_at":
+            str(report.created_at)
+    }
