@@ -4,6 +4,15 @@ from fastapi import (
     File,
     Depends
 )
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer
+)
+
+from reportlab.lib.styles import getSampleStyleSheet
+
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -452,4 +461,179 @@ def get_report(
             report.roadmap,
         "created_at":
             str(report.created_at)
+    }
+@app.post("/generate-resume")
+async def generate_resume(data: dict):
+
+    pdf_path = "generated_resume.pdf"
+
+    doc = SimpleDocTemplate(pdf_path)
+
+    styles = getSampleStyleSheet()
+
+    content = []
+
+    content.append(
+        Paragraph(
+            data["name"],
+            styles["Title"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            data["email"],
+            styles["Normal"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            data["phone"],
+            styles["Normal"]
+        )
+    )
+
+    content.append(Spacer(1, 20))
+
+    content.append(
+        Paragraph(
+            "Skills",
+            styles["Heading2"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            data["skills"],
+            styles["Normal"]
+        )
+    )
+
+    content.append(Spacer(1, 20))
+
+    content.append(
+        Paragraph(
+            "Projects",
+            styles["Heading2"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            data["projects"],
+            styles["Normal"]
+        )
+    )
+
+    content.append(Spacer(1, 20))
+
+    content.append(
+        Paragraph(
+            "Education",
+            styles["Heading2"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            data["education"],
+            styles["Normal"]
+        )
+    )
+
+    doc.build(content)
+
+    return FileResponse(
+        pdf_path,
+        filename="Resume.pdf",
+        media_type="application/pdf"
+    )
+@app.post("/generate-cover-letter")
+async def generate_cover_letter(data: dict):
+
+    pdf_path = "generated_cover_letter.pdf"
+
+    doc = SimpleDocTemplate(pdf_path)
+
+    styles = getSampleStyleSheet()
+
+    content = []
+
+    content.append(
+        Paragraph(
+            "Cover Letter",
+            styles["Title"]
+        )
+    )
+
+    content.append(Spacer(1, 20))
+
+    letter = f"""
+    Dear Hiring Manager,
+
+    I am writing to express my interest in the
+    {data['job_role']} position at
+    {data['company']}.
+
+    My skills include:
+    {data['skills']}.
+
+    Relevant experience and projects:
+
+    {data['experience']}
+
+    I am confident that my technical skills,
+    problem-solving ability, and passion for
+    learning make me a strong candidate for
+    this role.
+
+    Thank you for your time and consideration.
+
+    Sincerely,
+
+    {data['name']}
+    """
+
+    content.append(
+        Paragraph(
+            letter,
+            styles["BodyText"]
+        )
+    )
+
+    doc.build(content)
+
+    return FileResponse(
+        pdf_path,
+        filename="CoverLetter.pdf",
+        media_type="application/pdf"
+    )
+@app.post("/generate-question")
+async def generate_question(
+    data: dict
+):
+    role = data["role"]
+
+    return {
+        "question":
+        f"What skills are most important for a {role}?"
+    }
+
+
+@app.post("/evaluate-answer")
+async def evaluate_answer(data: dict):
+    answer = data["answer"]
+
+    score = min(
+        10,
+        max(
+            5,
+            len(answer) // 30
+        )
+    )
+
+    return {
+        "feedback":
+        f"Score: {score}/10. Good answer. Add more technical details and examples."
     }
