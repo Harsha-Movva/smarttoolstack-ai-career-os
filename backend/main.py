@@ -9,7 +9,7 @@ from reportlab.platypus import (
     Paragraph,
     Spacer
 )
-
+from services.gemini_service import ask_gemini
 from reportlab.lib.styles import getSampleStyleSheet
 
 from fastapi.responses import FileResponse
@@ -610,30 +610,59 @@ async def generate_cover_letter(data: dict):
         media_type="application/pdf"
     )
 @app.post("/generate-question")
-async def generate_question(
-    data: dict
-):
+async def generate_question(data: dict):
+
     role = data["role"]
 
+    prompt = f"""
+    Generate ONE realistic technical
+    interview question for a
+    {role}.
+
+    Return only the question.
+    """
+
+    question = ask_gemini(
+        prompt
+    )
+
     return {
-        "question":
-        f"What skills are most important for a {role}?"
+        "question": question
     }
 
 
 @app.post("/evaluate-answer")
 async def evaluate_answer(data: dict):
+
+    question = data["question"]
+
     answer = data["answer"]
 
-    score = min(
-        10,
-        max(
-            5,
-            len(answer) // 30
-        )
+    prompt = f"""
+    Interview Question:
+
+    {question}
+
+    Candidate Answer:
+
+    {answer}
+
+    Evaluate the answer.
+
+    Give:
+
+    1. Score out of 10
+    2. Strengths
+    3. Weaknesses
+    4. Improved Answer
+
+    Keep it concise.
+    """
+
+    feedback = ask_gemini(
+        prompt
     )
 
     return {
-        "feedback":
-        f"Score: {score}/10. Good answer. Add more technical details and examples."
+        "feedback": feedback
     }
