@@ -631,6 +631,42 @@ async def generate_question(data: dict):
     }
 
 
+import json
+
+def clean_and_parse_json(text: str):
+    text = text.strip()
+    # Try parsing directly first
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    
+    # Try stripping markdown code blocks
+    cleaned = re.sub(r"^```(?:json)?\n", "", text, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\n```$", "", cleaned)
+    cleaned = cleaned.strip()
+    
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        pass
+        
+    # Try finding the first '{' and the last '}'
+    match = re.search(r"(\{.*\})", cleaned, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+            
+    # Fallback structure
+    return {
+        "score": 0,
+        "strengths": ["Could not parse feedback details."],
+        "weaknesses": ["Please try again."],
+        "improved_answer": "Unable to generate improved answer due to formatting issues."
+    }
+
 @app.post("/evaluate-answer")
 async def evaluate_answer(data: dict):
 
@@ -639,30 +675,37 @@ async def evaluate_answer(data: dict):
     answer = data["answer"]
 
     prompt = f"""
-    Interview Question:
+You are a senior technical interviewer.
 
-    {question}
+Question:
+{question}
 
-    Candidate Answer:
+Answer:
+{answer}
 
-    {answer}
+Return ONLY valid JSON.
 
-    Evaluate the answer.
+{{
+  "score": 0,
+  "strengths": [
+    ""
+  ],
+  "weaknesses": [
+    ""
+  ],
+  "improved_answer": ""
+}}
 
-    Give:
+Do not add markdown.
+Do not add explanations outside JSON.
+"""
 
-    1. Score out of 10
-    2. Strengths
-    3. Weaknesses
-    4. Improved Answer
-
-    Keep it concise.
-    """
-
-    feedback = ask_gemini(
+    feedback_str = ask_gemini(
         prompt
     )
 
+    feedback_data = clean_and_parse_json(feedback_str)
+
     return {
-        "feedback": feedback
+        "feedback": feedback_data
     }
