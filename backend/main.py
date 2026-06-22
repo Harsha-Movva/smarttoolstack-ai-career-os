@@ -1,3 +1,15 @@
+import json
+import re
+
+def clean_and_parse_json(text):
+
+    text = re.sub(
+        r"```json|```",
+        "",
+        text
+    ).strip()
+
+    return json.loads(text)
 from fastapi import (
     FastAPI,
     UploadFile,
@@ -109,46 +121,65 @@ async def upload_resume(
 
     text = extract_text(file_path)
 
-    result = calculate_score(text)
+    prompt = f"""
+You are an expert ATS Resume Analyzer.
 
-    career = recommend_career(
-        result["skills"]
+Analyze this resume:
+
+{text}
+
+Return ONLY valid JSON.
+
+{{
+  "ats_score": 0,
+  "skills": [],
+  "missing_skills": [],
+  "career": "",
+  "roadmap": [],
+  "strengths": [],
+  "weaknesses": [],
+  "suggestions": []
+}}
+
+Do not add markdown.
+Do not add explanations outside JSON.
+"""
+
+    analysis = ask_gemini(
+        prompt
     )
 
-    roadmap = generate_roadmap(
-        career
-    )
-
-    analysis = generate_suggestions(
-        result["skills"],
-        result["missing_skills"]
+    analysis = clean_and_parse_json(
+        analysis
     )
 
     return {
         "filename": file.filename,
 
-        "ats_score": result["score"],
+        "ats_score":
+            analysis["ats_score"],
 
-        "skills": result["skills"],
+        "skills":
+            analysis["skills"],
 
         "missing_skills":
-        result["missing_skills"],
+            analysis["missing_skills"],
 
-        "career": career,
+        "career":
+            analysis["career"],
 
-        "roadmap": roadmap,
+        "roadmap":
+            analysis["roadmap"],
 
         "strengths":
-        analysis["strengths"],
+            analysis["strengths"],
 
         "weaknesses":
-        analysis["weaknesses"],
+            analysis["weaknesses"],
 
         "suggestions":
-        analysis["suggestions"]
+            analysis["suggestions"]
     }
-
-
 @app.post("/job-match")
 async def job_match(
     data: dict
@@ -473,6 +504,37 @@ async def generate_resume(data: dict):
 
     content = []
 
+    summary_prompt = f"""
+You are a professional resume writer.
+
+Create ONE ATS-friendly professional summary.
+
+Candidate Name:
+{data["name"]}
+
+Skills:
+{data["skills"]}
+
+Projects:
+{data["projects"]}
+
+Education:
+{data["education"]}
+
+Rules:
+- Write exactly one summary
+- 4 to 5 lines only
+- No options
+- No headings
+- No bullet points
+- No explanations
+- Resume-ready format only
+"""
+
+    summary = ask_gemini(
+        summary_prompt
+    )
+
     content.append(
         Paragraph(
             data["name"],
@@ -491,6 +553,22 @@ async def generate_resume(data: dict):
         Paragraph(
             data["phone"],
             styles["Normal"]
+        )
+    )
+
+    content.append(Spacer(1, 20))
+
+    content.append(
+        Paragraph(
+            "Professional Summary",
+            styles["Heading2"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            summary,
+            styles["BodyText"]
         )
     )
 
@@ -560,6 +638,38 @@ async def generate_cover_letter(data: dict):
 
     content = []
 
+    prompt = f"""
+You are a professional career coach.
+
+Write a professional ATS-friendly cover letter.
+
+Candidate Name:
+{data["name"]}
+
+Job Role:
+{data["job_role"]}
+
+Company:
+{data["company"]}
+
+Skills:
+{data["skills"]}
+
+Experience:
+{data["experience"]}
+
+Rules:
+- Professional tone
+- 250 to 350 words
+- No placeholders
+- Ready to submit
+- Address as 'Dear Hiring Manager'
+"""
+
+    letter = ask_gemini(
+        prompt
+    )
+
     content.append(
         Paragraph(
             "Cover Letter",
@@ -567,33 +677,9 @@ async def generate_cover_letter(data: dict):
         )
     )
 
-    content.append(Spacer(1, 20))
-
-    letter = f"""
-    Dear Hiring Manager,
-
-    I am writing to express my interest in the
-    {data['job_role']} position at
-    {data['company']}.
-
-    My skills include:
-    {data['skills']}.
-
-    Relevant experience and projects:
-
-    {data['experience']}
-
-    I am confident that my technical skills,
-    problem-solving ability, and passion for
-    learning make me a strong candidate for
-    this role.
-
-    Thank you for your time and consideration.
-
-    Sincerely,
-
-    {data['name']}
-    """
+    content.append(
+        Spacer(1, 20)
+    )
 
     content.append(
         Paragraph(
@@ -615,12 +701,14 @@ async def generate_question(data: dict):
     role = data["role"]
 
     prompt = f"""
-    Generate ONE realistic technical
-    interview question for a
-    {role}.
+You are a senior technical interviewer.
 
-    Return only the question.
-    """
+Generate ONE interview question for:
+
+{role}
+
+Return only the question.
+"""
 
     question = ask_gemini(
         prompt
@@ -629,44 +717,6 @@ async def generate_question(data: dict):
     return {
         "question": question
     }
-
-
-import json
-
-def clean_and_parse_json(text: str):
-    text = text.strip()
-    # Try parsing directly first
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        pass
-    
-    # Try stripping markdown code blocks
-    cleaned = re.sub(r"^```(?:json)?\n", "", text, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\n```$", "", cleaned)
-    cleaned = cleaned.strip()
-    
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        pass
-        
-    # Try finding the first '{' and the last '}'
-    match = re.search(r"(\{.*\})", cleaned, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError:
-            pass
-            
-    # Fallback structure
-    return {
-        "score": 0,
-        "strengths": ["Could not parse feedback details."],
-        "weaknesses": ["Please try again."],
-        "improved_answer": "Unable to generate improved answer due to formatting issues."
-    }
-
 @app.post("/evaluate-answer")
 async def evaluate_answer(data: dict):
 

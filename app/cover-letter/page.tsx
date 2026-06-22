@@ -5,7 +5,8 @@ import { useState } from "react";
 export default function CoverLetterPage() {
   const [name, setName] =
     useState("");
-
+  const [loading, setLoading] =
+  useState(false);
   const [company, setCompany] =
     useState("");
 
@@ -19,55 +20,83 @@ export default function CoverLetterPage() {
     useState("");
 
   const handleGenerate = async () => {
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/generate-cover-letter",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            company,
-            job_role: jobRole,
-            skills,
-            experience,
-          }),
-        }
+
+  setLoading(true);
+
+  try {
+
+    const response = await fetch(
+      "http://127.0.0.1:8000/generate-cover-letter",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          name,
+          company,
+          job_role: jobRole,
+          skills,
+          experience,
+        }),
+      }
+    );
+
+    console.log(
+      "Status:",
+      response.status
+    );
+
+    if (!response.ok) {
+
+      throw new Error(
+        `HTTP Error ${response.status}`
       );
 
-      const blob =
-        await response.blob();
-
-      const url =
-        window.URL.createObjectURL(
-          blob
-        );
-
-      const a =
-        document.createElement("a");
-
-      a.href = url;
-
-      a.download =
-        "CoverLetter.pdf";
-
-      document.body.appendChild(a);
-
-      a.click();
-
-      a.remove();
-
-      window.URL.revokeObjectURL(
-        url
-      );
-
-    } catch (error) {
-      console.error(error);
     }
-  };
+
+    const blob =
+      await response.blob();
+
+    const url =
+      window.URL.createObjectURL(
+        blob
+      );
+
+    const a =
+      document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+      "CoverLetter.pdf";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    window.URL.revokeObjectURL(
+      url
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Cover letter generation error:",
+      error
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -183,6 +212,7 @@ export default function CoverLetterPage() {
 
           <button
             onClick={handleGenerate}
+            disabled={loading}
             className="
               px-6
               py-3
@@ -193,7 +223,9 @@ export default function CoverLetterPage() {
               hover:bg-cyan-400
             "
           >
-            Generate Cover Letter
+            {loading
+  ? "Generating..."
+  : "Generate Cover Letter"}
           </button>
 
         </div>

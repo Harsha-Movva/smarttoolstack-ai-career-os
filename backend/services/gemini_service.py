@@ -14,8 +14,23 @@ model = genai.GenerativeModel(
 
 
 def ask_gemini(prompt: str):
-    response = model.generate_content(
-        prompt
-    )
 
-    return response.text
+    try:
+
+        response = model.generate_content(
+            prompt
+        )
+
+        return response.text
+
+    except Exception as e:
+
+        print(
+            "Gemini Error:",
+            str(e)
+        )
+
+        return """
+AI service temporarily unavailable.
+Please try again later.
+"""
