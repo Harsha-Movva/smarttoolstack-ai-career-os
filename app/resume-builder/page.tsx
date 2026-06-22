@@ -9,8 +9,9 @@ export default function ResumeBuilderPage() {
   const [skills, setSkills] = useState("");
   const [projects, setProjects] = useState("");
   const [education, setEducation] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const handleGenerate = async () => {
+    setLoading(true);
 
   try {
 
@@ -34,6 +35,12 @@ export default function ResumeBuilderPage() {
         }),
       }
     );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP Error ${response.status}`
+      );
+    }
 
     const blob =
       await response.blob();
@@ -68,7 +75,12 @@ export default function ResumeBuilderPage() {
       error
     );
 
+  } finally {
+
+    setLoading(false);
+
   }
+
 };
 
   return (
@@ -200,6 +212,7 @@ export default function ResumeBuilderPage() {
 
           <button
             onClick={handleGenerate}
+            disabled={loading}
             className="
               px-6
               py-3
@@ -210,7 +223,9 @@ export default function ResumeBuilderPage() {
               hover:bg-cyan-400
             "
           >
-            Generate Resume
+            {loading
+  ? "Generating..."
+  : "Generate Resume"}
           </button>
 
         </div>
