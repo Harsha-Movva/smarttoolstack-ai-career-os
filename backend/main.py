@@ -800,6 +800,11 @@ Rules:
 async def extract_resume(
     file: UploadFile
 ):
+
+    return {
+        "message":
+        "Resume extraction coming soon"
+    }
     
 @app.post("/generate-resume-interview")
 async def generate_resume_interview(data: dict):
@@ -832,3 +837,37 @@ Return JSON:
     )
 @app.post("/career-coach")
 async def career_coach(data: dict):
+
+    ats_score = data["ats_score"]
+    interview_score = data["interview_score"]
+    skills = data["skills"]
+
+    prompt = f"""
+You are an expert career coach.
+
+ATS Score:
+{ats_score}
+
+Interview Score:
+{interview_score}
+
+Skills:
+{skills}
+
+Give:
+
+1. Strengths
+2. Weaknesses
+3. 30-Day Improvement Plan
+4. 90-Day Career Plan
+
+Return plain text.
+"""
+
+    response = ask_gemini(
+        prompt
+    )
+
+    return {
+        "advice": response
+    }
