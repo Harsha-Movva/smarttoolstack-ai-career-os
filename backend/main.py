@@ -701,22 +701,32 @@ async def generate_question(data: dict):
     role = data["role"]
 
     prompt = f"""
-You are a senior technical interviewer.
-
-Generate ONE interview question for:
+Generate 5 interview questions for:
 
 {role}
 
-Return only the question.
+Return ONLY valid JSON.
+
+{{
+  "questions": [
+    "",
+    "",
+    "",
+    "",
+    ""
+  ]
+}}
+
+Do not add markdown.
 """
 
-    question = ask_gemini(
+    response = ask_gemini(
         prompt
     )
 
-    return {
-        "question": question
-    }
+    return clean_and_parse_json(
+        response
+    )
 @app.post("/evaluate-answer")
 async def evaluate_answer(data: dict):
 
@@ -746,16 +756,79 @@ Return ONLY valid JSON.
   "improved_answer": ""
 }}
 
-Do not add markdown.
-Do not add explanations outside JSON.
+Rules:
+- Score must be between 0 and 10
+- Never return a score greater than 10
+- Never return a negative score
+- Return valid JSON only
+- Do not add markdown
+- Do not add explanations outside JSON
 """
 
     feedback_str = ask_gemini(
         prompt
     )
 
-    feedback_data = clean_and_parse_json(feedback_str)
+    try:
+
+        feedback_data = clean_and_parse_json(
+            feedback_str
+        )
+
+        if feedback_data["score"] > 10:
+            feedback_data["score"] = 10
+
+        if feedback_data["score"] < 0:
+            feedback_data["score"] = 0
+
+    except Exception:
+
+        feedback_data = {
+            "score": 0,
+            "strengths": [],
+            "weaknesses": [
+                "Failed to evaluate answer."
+            ],
+            "improved_answer":
+                "Please try again."
+        }
 
     return {
         "feedback": feedback_data
     }
+@app.post("/extract-resume")
+async def extract_resume(
+    file: UploadFile
+):
+    
+@app.post("/generate-resume-interview")
+async def generate_resume_interview(data: dict):
+
+    resume_text = data["resume"]
+
+    prompt = f"""
+You are a senior interviewer.
+
+Resume:
+
+{resume_text}
+
+Generate 5 interview questions
+based specifically on the resume.
+
+Return JSON:
+
+{{
+  "questions":[]
+}}
+"""
+
+    response = ask_gemini(
+        prompt
+    )
+
+    return clean_and_parse_json(
+        response
+    )
+@app.post("/career-coach")
+async def career_coach(data: dict):
