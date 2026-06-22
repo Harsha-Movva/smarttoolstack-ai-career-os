@@ -6,9 +6,10 @@ export default function InterviewPage() {
   const [role, setRole] = useState("");
   const [questions, setQuestions] =
   useState<string[]>([]);
-    const [atsScore, setAtsScore] =
+  const [atsScore, setAtsScore] =
     useState(0);
-
+  const [careerAdvice, setCareerAdvice] =
+  useState("");
   const [interviewScore, setInterviewScore] =
     useState(0);
   const [allStrengths, setAllStrengths] =
@@ -66,6 +67,46 @@ setFeedback(null);
       console.error(error);
     }
   };
+  const generateCareerAdvice =
+  async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          "http://127.0.0.1:8000/career-coach",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              ats_score: 70,
+              interview_score:
+                average,
+              skills:
+                "Python, SQL, ML",
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      setCareerAdvice(
+        data.advice
+      );
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+    }
+
+};
 
   const evaluateAnswer = async () => {
 
@@ -574,6 +615,37 @@ const average =
           Needs Improvement
         </p>
       )}
+      <button
+  onClick={
+    generateCareerAdvice
+  }
+  className="
+    mt-6
+    px-6
+    py-3
+    rounded-xl
+    bg-cyan-500
+    text-black
+    font-bold
+  "
+>
+  Generate AI Career Advice
+</button>
+{careerAdvice && (
+
+  <div
+    className="
+      mt-6
+      p-4
+      bg-zinc-700
+      rounded-xl
+      whitespace-pre-wrap
+    "
+  >
+    {careerAdvice}
+  </div>
+
+)}
 
     </div>
 
