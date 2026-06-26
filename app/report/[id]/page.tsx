@@ -10,9 +10,14 @@ type Report = {
   user_id: number;
   ats_score: string;
   career: string;
-  skills: string[];
-  missing_skills: string[];
-  roadmap: string[];
+  skills: string[] | string;
+  missing_skills: string[] | string;
+  roadmap: string[] | string;
+
+  strengths: string[] | string;
+  weaknesses: string[] | string;
+  suggestions: string[] | string;
+
   created_at: string;
 };
 
@@ -89,16 +94,74 @@ setReport(data);
       </button>
 
       <div
-        className="
-          bg-zinc-900
-          border
-          border-zinc-800
-          rounded-3xl
-          p-8
-        "
-      >
+  className="
+    bg-zinc-900
+    border
+    border-zinc-800
+    rounded-3xl
+    p-8
+  "
+>
 
-        <div className="flex justify-between items-center">
+  <div className="flex justify-end mb-6">
+
+    <button
+      onClick={async () => {
+
+        const response =
+          await fetch(
+            "http://127.0.0.1:8000/generate-report",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify(
+                report
+              ),
+            }
+          );
+
+        const blob =
+          await response.blob();
+
+        const url =
+          window.URL.createObjectURL(
+            blob
+          );
+
+        const a =
+          document.createElement("a");
+
+        a.href = url;
+
+        a.download =
+          "Career_Report.pdf";
+
+        a.click();
+
+        window.URL.revokeObjectURL(
+          url
+        );
+
+      }}
+      className="
+        px-5
+        py-3
+        rounded-xl
+        bg-cyan-500
+        text-black
+        font-bold
+        hover:bg-cyan-400
+      "
+    >
+      Download PDF
+    </button>
+
+  </div>
+
+  <div className="flex justify-between items-center">
 
           <div>
 
@@ -257,7 +320,76 @@ setReport(data);
     </li>
   )
 )}
+<div className="mt-10">
 
+  <h2
+    className="
+      text-green-400
+      font-bold
+      text-2xl
+    "
+  >
+    Strengths
+  </h2>
+
+  <ul className="mt-4 space-y-3">
+
+    {(typeof report.strengths === "string"
+      ? report.strengths.split(",")
+      : report.strengths || []
+    ).map((item, index) => (
+
+      <li
+        key={index}
+        className="
+          bg-zinc-800
+          p-4
+          rounded-xl
+        "
+      >
+        ✓ {item}
+      </li>
+
+    ))}
+
+  </ul>
+
+</div>
+<div className="mt-10">
+
+  <h2
+    className="
+      text-red-400
+      font-bold
+      text-2xl
+    "
+  >
+    Weaknesses
+  </h2>
+
+  <ul className="mt-4 space-y-3">
+
+    {(typeof report.weaknesses === "string"
+      ? report.weaknesses.split(",")
+      : report.weaknesses || []
+    ).map((item, index) => (
+
+      <li
+        key={index}
+        className="
+          bg-zinc-800
+          p-4
+          rounded-xl
+        "
+      >
+        ✗ {item}
+      </li>
+
+    ))}
+
+  </ul>
+
+</div>
 </ul>
 
         </div>

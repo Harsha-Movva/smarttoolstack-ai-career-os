@@ -9,9 +9,14 @@ def calculate_job_match(
 
     missing = []
 
+    resume_skills_lower = [
+        skill.lower()
+        for skill in resume_skills
+    ]
+
     for skill in resume_skills:
 
-        if skill in jd:
+        if skill.lower() in jd:
             matched.append(skill)
 
     keywords = [
@@ -30,7 +35,7 @@ def calculate_job_match(
 
         if (
             keyword in jd
-            and keyword not in resume_skills
+            and keyword not in resume_skills_lower
         ):
             missing.append(keyword)
 

@@ -305,15 +305,6 @@ const average =
     border-zinc-700
   "
 />
-
-<button
-  onClick={
-    generateQuestion
-  }
->
-  Generate Question
-</button>
-
         <button
           onClick={
             generateQuestion

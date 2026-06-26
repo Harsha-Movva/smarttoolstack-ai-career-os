@@ -25,8 +25,6 @@ class User(Base):
     )
 
     password = Column(String)
-
-
 class Report(Base):
     __tablename__ = "reports"
 
@@ -50,5 +48,11 @@ class Report(Base):
     missing_skills = Column(String)
 
     roadmap = Column(String)
+
+    strengths = Column(String)
+
+    weaknesses = Column(String)
+
+    suggestions = Column(String)
 
     created_at = Column(String)

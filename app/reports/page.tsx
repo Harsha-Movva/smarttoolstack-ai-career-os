@@ -5,11 +5,17 @@ import Sidebar from "@/components/layout/Sidebar";
 
 type Report = {
   id: number;
+  user_id: number;
   ats_score: string;
   career: string;
-  skills: string[];
-  missing_skills: string[];
-  roadmap: string[];
+  skills: string[] | string;
+  missing_skills: string[] | string;
+  roadmap: string[] | string;
+
+  strengths: string[] | string;
+  weaknesses: string[] | string;
+  suggestions: string[] | string;
+
   created_at: string;
 };
 
@@ -138,20 +144,38 @@ export default function ReportsPage() {
                   <div>
 
                     <h2
-                      className="
-                        text-3xl
-                        font-bold
-                        text-white
-                      "
-                    >
-                      {report.career}
-                    </h2>
+  className="
+    text-3xl
+    font-bold
+    text-white
+  "
+>
+  {report.career}
+</h2>
+
+<div
+  className="
+    mt-3
+    inline-block
+    px-4
+    py-2
+    rounded-xl
+    bg-cyan-500/20
+    text-cyan-400
+    font-semibold
+  "
+>
+  Recommended Career Path
+</div>
 
                     <p className="text-zinc-400 mt-2">
                       {new Date(
                         report.created_at
                       ).toLocaleString()}
                     </p>
+                    <p className="text-zinc-500 mt-1">
+  Resume Analysis Report
+</p>
 
                   </div>
 
@@ -169,14 +193,20 @@ export default function ReportsPage() {
                     "
                   >
                     <span
-                      className="
-                        text-4xl
-                        font-bold
-                        text-cyan-400
-                      "
-                    >
-                      {report.ats_score}
-                    </span>
+  className={`
+    text-4xl
+    font-bold
+    ${
+      Number(report.ats_score) >= 80
+        ? "text-green-400"
+        : Number(report.ats_score) >= 60
+        ? "text-yellow-400"
+        : "text-red-400"
+    }
+  `}
+>
+  {report.ats_score}
+</span>
                   </div>
 
                 </div>

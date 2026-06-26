@@ -93,62 +93,114 @@ export default function ResumeUpload({
   };
 
   return (
-    <div className="mt-8">
+  <div className="mt-8">
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-10">
+    <div
+      className="
+        bg-gradient-to-br
+        from-zinc-900
+        to-cyan-950/20
+        border
+        border-cyan-500/20
+        rounded-3xl
+        p-10
+      "
+    >
 
-        <h2 className="text-2xl font-bold text-white">
-          Resume Analysis
-        </h2>
+      <h2 className="text-3xl font-bold text-white">
+        Resume Analysis
+      </h2>
 
-        <p className="text-zinc-400 mt-2">
-          Upload your resume to generate ATS score,
-          skill analysis and career insights.
+      <p className="text-zinc-400 mt-3">
+        Upload your resume to generate ATS score,
+        skill analysis and career insights.
+      </p>
+
+      <div
+        className="
+          mt-8
+          border-2
+          border-dashed
+          border-cyan-500/30
+          rounded-3xl
+          p-16
+          text-center
+          bg-zinc-900/50
+        "
+      >
+
+        <div className="text-6xl">
+          📄
+        </div>
+
+        <h3
+          className="
+            text-2xl
+            font-bold
+            text-white
+            mt-4
+          "
+        >
+          Upload Your Resume
+        </h3>
+
+        <p className="text-zinc-400 mt-3">
+          PDF format recommended
         </p>
 
-        <div className="mt-6 border-2 border-dashed border-zinc-700 rounded-2xl p-16 text-center">
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileChange}
+          className="hidden"
+          id="resumeUpload"
+        />
 
-          <p className="text-zinc-400">
-            Drag & Drop PDF Resume
-          </p>
+        <label
+          htmlFor="resumeUpload"
+          className="
+            inline-block
+            mt-8
+            px-8
+            py-4
+            rounded-2xl
+            bg-gradient-to-r
+            from-cyan-400
+            to-blue-500
+            text-black
+            font-bold
+            cursor-pointer
+            hover:scale-105
+            transition
+            shadow-lg
+          "
+        >
+          Choose Resume
+        </label>
 
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleFileChange}
-            className="hidden"
-            id="resumeUpload"
-          />
-
-          <label
-            htmlFor="resumeUpload"
+        {fileName && (
+          <div
             className="
-              inline-block
               mt-6
-              px-6
+              inline-block
+              px-5
               py-3
               rounded-xl
-              bg-white
-              text-black
-              font-semibold
-              cursor-pointer
-              hover:bg-zinc-200
-              transition
+              bg-green-500/20
+              border
+              border-green-500
             "
           >
-            Choose File
-          </label>
-
-          {fileName && (
-            <p className="mt-4 text-green-400">
-              Selected: {fileName}
+            <p className="text-green-400">
+              ✅ {fileName}
             </p>
-          )}
-
-        </div>
+          </div>
+        )}
 
       </div>
 
     </div>
-  );
+
+  </div>
+);
 }

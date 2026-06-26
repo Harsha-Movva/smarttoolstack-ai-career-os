@@ -26,6 +26,17 @@ def generate_pdf_report(
     styles = getSampleStyleSheet()
 
     content = []
+    if isinstance(skills, str):
+        skills = skills.split(",")
+
+    if isinstance(missing_skills, str):
+        missing_skills = missing_skills.split(",")
+
+    if isinstance(roadmap, str):
+        roadmap = roadmap.split(",")
+
+    if isinstance(suggestions, str):
+        suggestions = suggestions.split(",")
 
     content.append(
         Paragraph(

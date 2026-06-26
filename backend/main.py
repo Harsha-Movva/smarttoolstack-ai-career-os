@@ -191,14 +191,66 @@ async def job_match(
         "job_description"
     ]
 
+    role_map = {
+
+        "data scientist":
+        """
+        python
+        sql
+        machine learning
+        deep learning
+        git
+        docker
+        aws
+        fastapi
+        """,
+
+        "ai engineer":
+        """
+        python
+        machine learning
+        deep learning
+        tensorflow
+        pytorch
+        docker
+        aws
+        """,
+
+        "frontend developer":
+        """
+        react
+        javascript
+        typescript
+        html
+        css
+        git
+        """,
+
+        "backend developer":
+        """
+        python
+        fastapi
+        sql
+        docker
+        aws
+        git
+        """
+    }
+
+    if (
+        job_description.lower().strip()
+        in role_map
+    ):
+        job_description = role_map[
+            job_description.lower().strip()
+        ]
+
     result = calculate_job_match(
         skills,
         job_description
     )
 
     return result
-
-
 @app.post("/generate-report")
 async def generate_report(
     data: dict
@@ -219,9 +271,10 @@ async def generate_report(
 
         roadmap=data["roadmap"],
 
-        suggestions=data[
-            "suggestions"
-        ]
+        suggestions = data.get(
+    "suggestions",
+    []
+)
     )
 
     return FileResponse(
@@ -374,25 +427,42 @@ def save_report(data: dict):
     db = SessionLocal()
 
     report = Report(
-        user_id=data["user_id"],
-        ats_score=str(
-            data["ats_score"]
-        ),
-        career=data["career"],
-        skills=",".join(
-            data["skills"]
-        ),
-        missing_skills=",".join(
-            data["missing_skills"]
-        ),
-        roadmap=",".join(
-            data["roadmap"]
-        ),
-        created_at=str(
-            datetime.now()
-        )
-    )
+    user_id=data["user_id"],
 
+    ats_score=str(
+        data["ats_score"]
+    ),
+
+    career=data["career"],
+
+    skills=",".join(
+        data["skills"]
+    ),
+
+    missing_skills=",".join(
+        data["missing_skills"]
+    ),
+
+    roadmap=",".join(
+        data["roadmap"]
+    ),
+
+    strengths=",".join(
+        data["strengths"]
+    ),
+
+    weaknesses=",".join(
+        data["weaknesses"]
+    ),
+
+    suggestions=",".join(
+        data["suggestions"]
+    ),
+
+    created_at=str(
+        datetime.now()
+    )
+)
     db.add(report)
     db.commit()
     db.close()
@@ -418,21 +488,38 @@ def get_reports(user_id: int):
     for report in reports:
 
         result.append({
-            "id": report.id,
-            "user_id": report.user_id,
-            "ats_score": report.ats_score,
-            "career": report.career,
-            "skills": report.skills.split(",")
-            if report.skills else [],
-            "missing_skills":
-                report.missing_skills.split(",")
-                if report.missing_skills else [],
-            "roadmap":
-                report.roadmap.split(",")
-                if report.roadmap else [],
-            "created_at":
-                report.created_at
-        })
+    "id": report.id,
+    "user_id": report.user_id,
+    "ats_score": report.ats_score,
+    "career": report.career,
+
+    "skills":
+        report.skills.split(",")
+        if report.skills else [],
+
+    "missing_skills":
+        report.missing_skills.split(",")
+        if report.missing_skills else [],
+
+    "roadmap":
+        report.roadmap.split(",")
+        if report.roadmap else [],
+
+    "strengths":
+        report.strengths.split(",")
+        if report.strengths else [],
+
+    "weaknesses":
+        report.weaknesses.split(",")
+        if report.weaknesses else [],
+
+    "suggestions":
+        report.suggestions.split(",")
+        if report.suggestions else [],
+
+    "created_at":
+        report.created_at
+})
 
     db.close()
 
@@ -478,21 +565,20 @@ def get_report(
         }
 
     return {
-        "id": report.id,
-        "user_id": report.user_id,
-        "ats_score":
-            report.ats_score,
-        "career":
-            report.career,
-        "skills":
-            report.skills,
-        "missing_skills":
-            report.missing_skills,
-        "roadmap":
-            report.roadmap,
-        "created_at":
-            str(report.created_at)
-    }
+    "id": report.id,
+    "user_id": report.user_id,
+    "ats_score": report.ats_score,
+    "career": report.career,
+    "skills": report.skills,
+    "missing_skills": report.missing_skills,
+    "roadmap": report.roadmap,
+
+    "strengths": report.strengths,
+    "weaknesses": report.weaknesses,
+    "suggestions": report.suggestions,
+
+    "created_at": str(report.created_at)
+}
 @app.post("/generate-resume")
 async def generate_resume(data: dict):
 

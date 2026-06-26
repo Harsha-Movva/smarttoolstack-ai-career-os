@@ -3,137 +3,222 @@
 import Link from "next/link";
 
 export default function Sidebar() {
+  const logout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
+
   return (
     <aside
       className="
-        w-64
+        w-80
         min-h-screen
-        bg-zinc-900
+        bg-gradient-to-b
+        from-zinc-950
+        via-zinc-900
+        to-black
         border-r
         border-zinc-800
+        flex
+        flex-col
       "
     >
-      <div className="p-6">
-        <h1 className="text-2xl font-bold text-cyan-400">
-          SmartToolStack
-        </h1>
+      {/* Logo */}
+      <div>
+        <div className="p-8 border-b border-zinc-800">
+          <div className="flex items-center gap-3">
+            <div
+              className="
+                w-12
+                h-12
+                rounded-2xl
+                bg-cyan-500
+                flex
+                items-center
+                justify-center
+                text-2xl
+              "
+            >
+              ⚡
+            </div>
 
-        <p className="text-zinc-500 text-sm mt-1">
-          AI Career OS
-        </p>
+            <div>
+              <h1 className="text-2xl font-bold text-white">
+                SmartToolStack
+              </h1>
+
+              <p className="text-cyan-400 text-sm">
+                AI Career Operating System
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="p-5 space-y-2">
+          <Link
+            href="/"
+            className="
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-2xl
+              text-zinc-300
+              hover:bg-cyan-500/10
+              hover:text-cyan-400
+              transition
+            "
+          >
+            📊 Dashboard
+          </Link>
+
+          <Link
+            href="/reports"
+            className="
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-2xl
+              text-zinc-300
+              hover:bg-cyan-500/10
+              hover:text-cyan-400
+              transition
+            "
+          >
+            📄 My Reports
+          </Link>
+
+          <Link
+            href="/resume-builder"
+            className="
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-2xl
+              text-zinc-300
+              hover:bg-cyan-500/10
+              hover:text-cyan-400
+              transition
+            "
+          >
+            📝 AI Resume Builder
+          </Link>
+
+          <Link
+            href="/cover-letter"
+            className="
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-2xl
+              text-zinc-300
+              hover:bg-cyan-500/10
+              hover:text-cyan-400
+              transition
+            "
+          >
+            ✉️ Cover Letter
+          </Link>
+
+          <Link
+            href="/interview"
+            className="
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-2xl
+              text-zinc-300
+              hover:bg-cyan-500/10
+              hover:text-cyan-400
+              transition
+            "
+          >
+            🎤 Interview Copilot
+          </Link>
+
+          <Link
+            href="/career-coach"
+            className="
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-2xl
+              text-zinc-300
+              hover:bg-cyan-500/10
+              hover:text-cyan-400
+              transition
+            "
+          >
+            🧠 AI Career Coach
+          </Link>
+        </nav>
       </div>
 
-      <nav className="px-4 flex flex-col gap-4">
+      {/* Footer */}
+      <div className="mt-auto p-6 border-t border-zinc-800">
 
-        <Link
-          href="/"
-          className="
-            block
-            px-4
-            py-3
-            rounded-xl
-            text-zinc-300
-            hover:bg-zinc-800
-            hover:text-cyan-400
-            transition
-          "
-        >
-          📊 Dashboard
-        </Link>
+  <div className="flex items-center gap-3 mb-5">
 
-        <Link
-          href="/reports"
-          className="
-            block
-            px-4
-            py-3
-            rounded-xl
-            text-zinc-300
-            hover:bg-zinc-800
-            hover:text-cyan-400
-            transition
-          "
-        >
-          📄 My Reports
-        </Link>
-        <Link
-  href="/resume-builder"
-  className="
-    block
-    px-4
-    py-3
-    rounded-xl
-    text-zinc-300
-    hover:bg-zinc-800
-    hover:text-cyan-400
-    transition
-  "
->
-  📄 AI Resume Builder
-</Link>
-<Link
-  href="/cover-letter"
-  className="
-    block
-    px-4
-    py-3
-    rounded-xl
-    text-zinc-300
-    hover:bg-zinc-800
-    hover:text-cyan-400
-  "
->
-  ✉️ Cover Letter
-</Link>
-<Link
-  href="/interview"
-  className="
-    block
-    px-4
-    py-3
-    rounded-xl
-    text-zinc-300
-    hover:bg-zinc-800
-    hover:text-cyan-400
-    transition
-  "
->
-  🎤 Interview Copilot
-</Link>
-        <div
-          className="
-            px-4
-            py-3
-            rounded-xl
-            text-zinc-500
-          "
-        >
-          📑 Resume Analyzer
-        </div>
+    <div
+      className="
+        w-12
+        h-12
+        rounded-full
+        bg-cyan-500
+        flex
+        items-center
+        justify-center
+        text-xl
+        font-bold
+        text-black
+      "
+    >
+      H
+    </div>
 
-        <div
-          className="
-            px-4
-            py-3
-            rounded-xl
-            text-zinc-500
-          "
-        >
-          🛣️ Career Roadmap
-        </div>
+    <div>
 
-        <div
-          className="
-            px-4
-            py-3
-            rounded-xl
-            text-zinc-500
-          "
-        >
-          🎤 Interview Copilot
-        </div>
+      <p className="text-white font-semibold">
+        Harsha
+      </p>
 
-      </nav>
+      <p className="text-zinc-500 text-sm">
+        Student Plan
+      </p>
+
+    </div>
+
+  </div>
+
+  <button
+    onClick={logout}
+    className="
+      w-full
+      h-12
+      rounded-xl
+      bg-red-500
+      hover:bg-red-400
+      transition
+      text-white
+      font-semibold
+    "
+  >
+    Logout
+  </button>
+
+</div>
     </aside>
   );
 }

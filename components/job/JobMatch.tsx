@@ -41,7 +41,18 @@ export default function JobMatch({
   };
 
   return (
-    <div className="mt-8 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+    <div
+  className="
+    mt-8
+    bg-gradient-to-br
+    from-zinc-900
+    to-zinc-950
+    border
+    border-zinc-800
+    rounded-3xl
+    p-8
+  "
+>
 
       <h2 className="text-xl font-bold text-white">
         Job Match Analyzer
