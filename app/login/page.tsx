@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE_URL } from "@/lib/api/config";
 
 import { useState } from "react";
 import axios from "axios";
@@ -34,7 +35,7 @@ export default function Login() {
 
       const response =
         await axios.post(
-          "http://127.0.0.1:8000/login",
+          `${API_BASE_URL}/login`,
           {
             email,
             password,

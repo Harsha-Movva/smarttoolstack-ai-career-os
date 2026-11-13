@@ -1,12 +1,15 @@
 "use client";
 
 import DashboardLayout from "@/components/ai-os/layout/DashboardLayout";
-import Hero from "@/components/ai-os/hero/Hero";
+import Dashboard from "@/components/ai-os/dashboard/Dashboard";
+import { DashboardProvider } from "@/lib/context/DashboardContext";
 
 export default function AIOSPage() {
   return (
-    <DashboardLayout>
-      <Hero />
-    </DashboardLayout>
+    <DashboardProvider>
+      <DashboardLayout>
+        <Dashboard />
+      </DashboardLayout>
+    </DashboardProvider>
   );
 }

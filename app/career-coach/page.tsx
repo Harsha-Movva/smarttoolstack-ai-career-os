@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE_URL } from "@/lib/api/config";
 
 import { useState } from "react";
 
@@ -17,7 +18,7 @@ export default function CareerCoachPage() {
 
         const response =
           await fetch(
-            "http://127.0.0.1:8000/career-coach",
+            `${API_BASE_URL}/career-coach`,
             {
               method: "POST",
               headers: {

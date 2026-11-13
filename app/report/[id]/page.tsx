@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE_URL } from "@/lib/api/config";
 
 import {
   useEffect,
@@ -39,7 +40,7 @@ export default function ReportPage() {
 
         const response =
           await fetch(
-            `http://127.0.0.1:8000/report/${reportId}`
+            `${API_BASE_URL}/report/${reportId}`
           );
 
         const data = await response.json();
@@ -110,7 +111,7 @@ setReport(data);
 
         const response =
           await fetch(
-            "http://127.0.0.1:8000/generate-report",
+            `${API_BASE_URL}/generate-report`,
             {
               method: "POST",
               headers: {

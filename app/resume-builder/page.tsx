@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE_URL } from "@/lib/api/config";
 
 import { useState } from "react";
 
@@ -16,7 +17,7 @@ export default function ResumeBuilderPage() {
   try {
 
     const response = await fetch(
-      "http://127.0.0.1:8000/generate-resume",
+      `${API_BASE_URL}/generate-resume`,
       {
         method: "POST",
 

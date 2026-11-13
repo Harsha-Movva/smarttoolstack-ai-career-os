@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE_URL } from "@/lib/api/config";
 
 import { useState } from "react";
 
@@ -32,7 +33,7 @@ export default function InterviewPage() {
   const generateQuestion = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/generate-question",
+        `${API_BASE_URL}/generate-question`,
         {
           method: "POST",
           headers: {
@@ -74,7 +75,7 @@ setFeedback(null);
 
       const response =
         await fetch(
-          "http://127.0.0.1:8000/career-coach",
+          `${API_BASE_URL}/career-coach`,
           {
             method: "POST",
             headers: {
@@ -118,7 +119,7 @@ setFeedback(null);
   try {
 
     const response = await fetch(
-      "http://127.0.0.1:8000/evaluate-answer",
+      `${API_BASE_URL}/evaluate-answer`,
       {
         method: "POST",
         headers: {

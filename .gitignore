@@ -90,3 +90,7 @@ Thumbs.db
 
 .vscode/
 .idea/
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
